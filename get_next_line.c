@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tamounir <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tamounir <tamounir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 18:13:03 by tamounir          #+#    #+#             */
-/*   Updated: 2024/12/07 18:13:04 by tamounir         ###   ########.fr       */
+/*   Updated: 2024/12/24 20:08:58 by tamounir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,11 @@ static char	*reading(int fd, char *buffer)
 	char	*buff;
 
 	readed = 1;
+	if (BUFFER_SIZE <= 0)
+		return (NULL);
 	while (readed != 0)
 	{
-		buff = malloc(BUFFER_SIZE + 1);
+		buff = malloc((size_t)BUFFER_SIZE + 1);
 		readed = read(fd, buff, BUFFER_SIZE);
 		if ((!buffer && readed == 0) || readed == -1)
 		{
@@ -98,7 +100,7 @@ char	*get_next_line(int fd)
 	char		*tmp;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE >= INT_MAX)
+	if (fd < 0 || (size_t)BUFFER_SIZE + 1 > INT_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
 	tmp = reading(fd, buff);
 	if (!tmp)
