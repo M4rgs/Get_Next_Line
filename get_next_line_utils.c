@@ -28,12 +28,8 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		j;
 	char	*conc;
 
-	if (!s1 && !s2)
+	if (!s1 || !s2)
 		return (NULL);
-	if (!s2)
-		return (NULL);
-	if (!s1)
-		s1 = ft_calloc(1, 1);
 	conc = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!conc)
 		return (NULL);
@@ -44,9 +40,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	while (s2[++j])
 		conc[i++] = s2[j];
 	conc[i] = '\0';
-	free(s1);
-	free(s2);
-	return (conc);
+	return (free(s1), free(s2), conc);
 }
 
 int	ncheck(char *s)
@@ -63,21 +57,4 @@ int	ncheck(char *s)
 		i++;
 	}
 	return (0);
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	size_t	i;
-	char	*p;
-
-	i = 0;
-	p = malloc(count * size);
-	if (!p)
-		return (NULL);
-	while (i < count)
-	{
-		p[i] = '\0';
-		i++;
-	}
-	return (p);
 }
