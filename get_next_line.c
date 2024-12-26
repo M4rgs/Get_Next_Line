@@ -14,26 +14,30 @@
 
 static char	*reading(int fd, char *buffer)
 {
-	int		readed;
-	char	*buff;
+	ssize_t	read_bytes;
+	char	*tmp;
 
-	readed = 1;
-	while (readed != 0 && ncheck(buffer) != 1)
+	if (!buffer)
 	{
-		buff = malloc(BUFFER_SIZE + 1);
-		if (!buff)
+		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		if (buffer == NULL)
 			return (NULL);
-		readed = read(fd, buff, BUFFER_SIZE);
-		if ((!buffer && readed == 0) || readed == -1)
-		{
-			free(buff);
-			buff = NULL;
-			return (NULL);
-		}
-		buff[readed] = '\0';
-		buffer = ft_strjoin(buffer, buff);
 	}
-	return (buffer);
+	tmp = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (!tmp)
+		return (free(buffer), buffer = NULL, NULL);
+	read_bytes = 1;
+	while (read_bytes > 0 && ncheck(buffer) != 1)
+	{
+		read_bytes = read(fd, tmp, BUFFER_SIZE);
+		if (read_bytes == -1)
+			return (free(buffer), free(tmp), NULL);
+		tmp[read_bytes] = '\0';
+		buffer = ft_strjoin(buffer, tmp);
+		if (!buffer)
+			return (free(tmp), NULL);
+	}
+	return (free(tmp), buffer);
 }
 
 static char	*gettline(char *buffer)
@@ -42,74 +46,66 @@ static char	*gettline(char *buffer)
 	char	*line;
 
 	i = 0;
-	if (!buffer)
+	if (!buffer[i])
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	if (buffer[i] == '\0')
-		line = malloc(i + 1);
 	if (buffer[i] == '\n')
-		line = malloc(i + 2);
+		i++;
+	line = ft_calloc(i + 1, sizeof(char));
 	if (!line)
-		return (NULL);
-	i = -1;
-	while (buffer[++i] && buffer[i] != '\n')
-		line[i] = buffer[i];
-	if (buffer[i] == '\n')
+		return (free(line), NULL);
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
 	{
-		line[i] = '\n';
+		line[i] = buffer[i];
 		i++;
 	}
-	line[i] = '\0';
+	if (buffer[i] == '\n')
+		line[i] = '\n';
 	return (line);
 }
 
-static char	*getrest(char *line, char *buffer)
+static char	*ft_next_line(char *buffer)
 {
 	int		i;
 	int		j;
-	char	*rest;
+	char	*nextline;
 
-	i = ft_strlen(line);
-	if (buffer[i] == 0)
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
+		i++;
+	if (!buffer[i])
+		return (free(buffer), NULL);
+	nextline = ft_calloc(ft_strlen(buffer) - i + 1, sizeof(char));
+	if (!nextline)
+		return (free(buffer), NULL);
+	i++;
+	j = 0;
+	while (buffer[i])
+		nextline[j++] = buffer[i++];
+	nextline[j] = '\0';
+	free(buffer);
+	return (nextline);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*buffer;
+	char		*line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= INT_MAX)
+		return (NULL);
+	buffer = reading(fd, buffer);
+	if (buffer == NULL)
+		return (NULL);
+	line = gettline(buffer);
+	if (!line)
 	{
 		free(buffer);
 		buffer = NULL;
 		return (NULL);
 	}
-	j = 0;
-	while (buffer[i++])
-		j++;
-	rest = malloc(j + 1);
-	if (!rest)
-		return (NULL);
-	i = ft_strlen(line);
-	j = 0;
-	while (buffer[i])
-		rest[j++] = buffer[i++];
-	rest[j] = '\0';
-	free (buffer);
-	return (rest);
-}
-
-char	*get_next_line(int fd)
-{
-	static char	*buff;
-	char		*tmp;
-	char		*line;
-
-	if (fd < 0 || BUFFER_SIZE >= INT_MAX || BUFFER_SIZE <= 0)
-		return (NULL);
-	tmp = reading(fd, buff);
-	if (!tmp)
-	{
-		if (buff)
-			free(buff);
-		buff = NULL;
-		return (NULL);
-	}
-	buff = tmp;
-	line = gettline(buff);
-	buff = getrest(line, buff);
+	buffer = ft_next_line(buffer);
 	return (line);
 }

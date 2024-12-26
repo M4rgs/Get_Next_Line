@@ -28,5 +28,6 @@ char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
 char	*ft_strjoin(char *s1, char *s2);
 int		ncheck(char *s);
+void	*ft_calloc(size_t count, size_t size);
 
 #endif

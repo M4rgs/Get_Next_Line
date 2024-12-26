@@ -24,30 +24,29 @@ size_t	ft_strlen(char *s)
 
 char	*ft_strjoin(char *s1, char *s2)
 {
-	int		i;
-	int		j;
-	char	*conc;
+	char	*new;
+	size_t	i;
+	size_t	j;
+	size_t	len_s1;
+	size_t	len_s2;
 
-	if (!s1 && !s2)
+	if (!s1 || !s2)
 		return (NULL);
-	if (!s2)
-		return (NULL);
-	if (!s1)
-	{
-		s1 = malloc(1);
-		s1[0] = '\0';
-	}
-	conc = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!conc)
-		return (NULL);
-	i = -1;
-	while (s1[++i])
-		conc[i] = s1[i];
-	j = -1;
-	while (s2[++j])
-		conc[i++] = s2[j];
-	conc[i] = '\0';
-	return (free(s1), free(s2), conc);
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	i = 0;
+	j = 0;
+	new = ft_calloc((len_s1 + len_s2 + 1), sizeof(char));
+	if (new == NULL)
+		return (free(s1), NULL);
+	while (s1[i] != '\0')
+		new[j++] = s1[i++];
+	j = 0;
+	while (s2[j] != '\0')
+		new[i++] = s2[j++];
+	new[i] = '\0';
+	free(s1);
+	return (new);
 }
 
 int	ncheck(char *s)
@@ -64,4 +63,24 @@ int	ncheck(char *s)
 		i++;
 	}
 	return (0);
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	char	*mem;
+	size_t	i;
+
+	i = 0;
+	if (!count || !size)
+		return (0);
+	else
+		mem = malloc(count * size);
+	if (!mem)
+		return (free(mem), NULL);
+	while (i < size * count)
+	{
+		mem[i] = 0;
+		i++;
+	}
+	return (mem);
 }
