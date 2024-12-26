@@ -28,8 +28,15 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		j;
 	char	*conc;
 
-	if (!s1 || !s2)
+	if (!s1 && !s2)
 		return (NULL);
+	if (!s2)
+		return (NULL);
+	if (!s1)
+	{
+		s1 = malloc(1);
+		s1[0] = '\0';
+	}
 	conc = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!conc)
 		return (NULL);
