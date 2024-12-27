@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tamounir <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tamounir <tamounir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 18:13:03 by tamounir          #+#    #+#             */
-/*   Updated: 2024/12/07 18:13:04 by tamounir         ###   ########.fr       */
+/*   Updated: 2024/12/26 20:38:36 by tamounir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,23 @@
 
 static char	*reading(int fd, char *buffer)
 {
-	ssize_t	read_bytes;
+	ssize_t	readed;
 	char	*tmp;
 
+	if (BUFFER_SIZE <= 0 || (size_t)BUFFER_SIZE > INT_MAX)
+		return (NULL);
 	if (!buffer)
-	{
-		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-		if (buffer == NULL)
-			return (NULL);
-	}
-	tmp = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		buffer = ft_calloc((size_t)BUFFER_SIZE + 1, 1);
+	tmp = ft_calloc((size_t)BUFFER_SIZE + 1, 1);
 	if (!tmp)
 		return (free(buffer), buffer = NULL, NULL);
-	read_bytes = 1;
-	while (read_bytes > 0 && ncheck(buffer) != 1)
+	readed = 1;
+	while (readed > 0 && ncheck(buffer) != 1)
 	{
-		read_bytes = read(fd, tmp, BUFFER_SIZE);
-		if (read_bytes == -1)
+		readed = read(fd, tmp, BUFFER_SIZE);
+		if (readed == -1)
 			return (free(buffer), free(tmp), NULL);
-		tmp[read_bytes] = '\0';
+		tmp[readed] = '\0';
 		buffer = ft_strjoin(buffer, tmp);
 		if (!buffer)
 			return (free(tmp), NULL);
@@ -52,7 +50,7 @@ static char	*gettline(char *buffer)
 		i++;
 	if (buffer[i] == '\n')
 		i++;
-	line = ft_calloc(i + 1, sizeof(char));
+	line = ft_calloc(i + 1, 1);
 	if (!line)
 		return (free(line), NULL);
 	i = 0;
@@ -77,7 +75,7 @@ static char	*ft_next_line(char *buffer)
 		i++;
 	if (!buffer[i])
 		return (free(buffer), NULL);
-	nextline = ft_calloc(ft_strlen(buffer) - i + 1, sizeof(char));
+	nextline = ft_calloc(ft_strlen(buffer) - i + 1, 1);
 	if (!nextline)
 		return (free(buffer), NULL);
 	i++;
@@ -94,7 +92,7 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= INT_MAX)
+	if (fd < 0 || BUFFER_SIZE <= 0 || (size_t)BUFFER_SIZE > INT_MAX)
 		return (NULL);
 	buffer = reading(fd, buffer);
 	if (buffer == NULL)
