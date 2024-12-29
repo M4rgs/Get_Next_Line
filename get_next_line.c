@@ -50,7 +50,7 @@ static char	*gettline(char *buffer)
 		i++;
 	if (buffer[i] == '\n')
 		i++;
-	line = ft_calloc(i + 1, 1);
+	line = ft_calloc((size_t)i + 1, 1);
 	if (!line)
 		return (free(line), NULL);
 	i = 0;
@@ -75,7 +75,7 @@ static char	*ft_next_line(char *buffer)
 		i++;
 	if (!buffer[i])
 		return (free(buffer), NULL);
-	nextline = ft_calloc(ft_strlen(buffer) - i + 1, 1);
+	nextline = ft_calloc((size_t)(ft_strlen(buffer) - i + 1), 1);
 	if (!nextline)
 		return (free(buffer), NULL);
 	i++;
